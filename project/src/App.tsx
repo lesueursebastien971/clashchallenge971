@@ -1,165 +1,124 @@
-import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { SplashScreen } from './components/auth/SplashScreen';
-import { AuthScreen } from './components/auth/AuthScreen';
-import { BottomNav } from './components/layout/BottomNav';
-import { Header } from './components/layout/Header';
-import { HomeScreen } from './screens/HomeScreen';
-import { ProfileScreen } from './screens/ProfileScreen';
-import { LeaderboardScreen } from './screens/LeaderboardScreen';
-import { FriendsScreen } from './screens/FriendsScreen';
-import { NotificationsScreen } from './screens/NotificationsScreen';
-import { SettingsScreen } from './screens/SettingsScreen';
-import { SeasonScreen } from './screens/SeasonScreen';
-import { CreateChallengeModal } from './components/challenge/CreateChallengeModal';
-import { ChallengeDetailScreen } from './components/challenge/ChallengeDetailScreen';
-import { UploadResultScreen } from './components/challenge/UploadResultScreen';
+import { I18nProvider } from './i18n/I18nContext';
+import { DashboardLayout } from './components/Layout';
+import { LandingPage } from './pages/LandingPage';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { OnboardingPage } from './pages/OnboardingPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { ChallengesPage } from './pages/ChallengesPage';
+import { CreateChallengePage } from './pages/CreateChallengePage';
+import { ChallengeDetailPage } from './pages/ChallengeDetailPage';
+import { MatchmakingPage } from './pages/MatchmakingPage';
+import { LeaderboardPage } from './pages/LeaderboardPage';
+import { WalletPage } from './pages/WalletPage';
+import { NotificationsPage } from './pages/NotificationsPage';
+import { ProfilePage } from './pages/ProfilePage';
 
-type AppScreen = 'home' | 'leaderboard' | 'friends' | 'notifications' | 'profile';
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
 
-type ModalState =
-  | { type: 'none' }
-  | { type: 'create-challenge'; preselectedFriendId?: string }
-  | { type: 'challenge-detail'; challengeId: string }
-  | { type: 'upload-result'; matchId: string }
-  | { type: 'settings' };
-
-function AppContent() {
-  const { user, profile, loading } = useAuth();
-  const [showSplash, setShowSplash] = useState(true);
-  const [activeTab, setActiveTab] = useState<AppScreen>('home');
-  const [modalState, setModalState] = useState<ModalState>({ type: 'none' });
-  const [notificationCount, setNotificationCount] = useState(0);
-
-  useEffect(() => {
-    if (!loading) {
-      const timer = setTimeout(() => setShowSplash(false), 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [loading]);
-
-  if (showSplash) {
-    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gaming-dark-900 flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 rounded-full border-4 border-gaming-electric-500 border-t-transparent" />
+      </div>
+    );
   }
 
-  if (!user || !profile) {
-    return <AuthScreen />;
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
-  const handleCloseModal = () => {
-    setModalState({ type: 'none' });
-  };
+  return <>{children}</>;
+}
 
-  const renderScreen = () => {
-    switch (activeTab) {
-      case 'home':
-        return (
-          <div>
-            <Header />
-            <HomeScreen
-              onCreateChallenge={() => setModalState({ type: 'create-challenge' })}
-              onViewChallenge={(challengeId) =>
-                setModalState({ type: 'challenge-detail', challengeId })
-              }
-            />
-          </div>
-        );
-      case 'leaderboard':
-        return (
-          <div>
-            <LeaderboardScreen />
-          </div>
-        );
-      case 'friends':
-        return (
-          <div>
-            <FriendsScreen
-              onChallenge={(friendId) =>
-                setModalState({ type: 'create-challenge', preselectedFriendId: friendId })
-              }
-            />
-          </div>
-        );
-      case 'notifications':
-        return (
-          <div>
-            <NotificationsScreen />
-          </div>
-        );
-      case 'profile':
-        return (
-          <div>
-            <ProfileScreen
-              onSettings={() => setModalState({ type: 'settings' })}
-            />
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gaming-dark-900 flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 rounded-full border-4 border-gaming-electric-500 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function AppRoutes() {
   return (
-    <div className="min-h-screen bg-slate-900">
-      <main className="pb-20">
-        {renderScreen()}
-      </main>
-
-      <BottomNav
-        activeTab={activeTab}
-        onTabChange={(tab) => setActiveTab(tab as AppScreen)}
-        notificationCount={notificationCount}
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/" element={<LandingPage />} />
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <LoginPage />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <RegisterPage />
+          </PublicRoute>
+        }
       />
 
-      {modalState.type === 'create-challenge' && (
-        <CreateChallengeModal
-          onClose={handleCloseModal}
-          onComplete={(challengeId) =>
-            setModalState({ type: 'challenge-detail', challengeId })
-          }
-          preselectedFriendId={modalState.preselectedFriendId}
-        />
-      )}
+      {/* Onboarding */}
+      <Route
+        path="/onboarding"
+        element={
+          <ProtectedRoute>
+            <OnboardingPage />
+          </ProtectedRoute>
+        }
+      />
 
-      {modalState.type === 'challenge-detail' && (
-        <div className="fixed inset-0 bg-slate-900 z-50 overflow-y-auto">
-          <ChallengeDetailScreen
-            challengeId={modalState.challengeId}
-            onBack={handleCloseModal}
-            onUploadResult={(matchId) =>
-              setModalState({ type: 'upload-result', matchId })
-            }
-          />
-        </div>
-      )}
+      {/* Protected Dashboard Routes */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/challenges" element={<ChallengesPage />} />
+        <Route path="/challenges/new" element={<CreateChallengePage />} />
+        <Route path="/challenges/new" element={<CreateChallengePage />} />
+        <Route path="/challenges/:id" element={<ChallengeDetailPage />} />
+        <Route path="/matchmaking" element={<MatchmakingPage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
+        <Route path="/wallet" element={<WalletPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/:userId" element={<ProfilePage />} />
+      </Route>
 
-      {modalState.type === 'upload-result' && (
-        <div className="fixed inset-0 bg-slate-900 z-50 overflow-y-auto">
-          <UploadResultScreen
-            matchId={modalState.matchId}
-            onBack={() =>
-              setModalState({ type: 'challenge-detail', challengeId: '' })
-            }
-            onComplete={handleCloseModal}
-          />
-        </div>
-      )}
-
-      {modalState.type === 'settings' && (
-        <div className="fixed inset-0 bg-slate-900 z-50 overflow-y-auto">
-          <SettingsScreen onBack={handleCloseModal} />
-        </div>
-      )}
-    </div>
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
-function App() {
+export default function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <BrowserRouter>
+      <I18nProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </I18nProvider>
+    </BrowserRouter>
   );
 }
-
-export default App;

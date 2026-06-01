@@ -1,134 +1,201 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  html {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  body {
-    @apply bg-slate-900 text-white min-h-screen;
+  :root {
+    --gaming-dark-900: #0a0a0f;
+    --gaming-dark-800: #12121a;
+    --gaming-dark-700: #1a1a24;
+    --gaming-dark-600: #22222e;
+    --gaming-electric-500: #8b5cf6;
+    --gaming-neon-blue: #00d4ff;
+    --gaming-neon-purple: #bf00ff;
+    --gaming-neon-green: #00ff88;
+    --gaming-neon-red: #ff3366;
   }
 
   * {
-    @apply box-border;
+    @apply border-gaming-dark-600;
   }
 
-  input, button, textarea, select {
-    font: inherit;
+  body {
+    @apply bg-gaming-dark-900 text-white font-sans antialiased;
+    background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0a0a0f 100%);
+    min-height: 100vh;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gaming-dark-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gaming-dark-500 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gaming-electric-500;
   }
 }
 
 @layer components {
+  .btn {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 active:scale-95;
+  }
+
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-button hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-gaming-electric-500 hover:bg-gaming-electric-600 text-white shadow-lg shadow-gaming-electric-500/30;
   }
 
   .btn-secondary {
-    @apply bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-gaming-dark-600 hover:bg-gaming-dark-500 text-white border border-gaming-dark-500;
   }
 
-  .btn-accent {
-    @apply bg-accent-500 hover:bg-accent-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-button hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+  .btn-neon {
+    @apply bg-gradient-to-r from-gaming-electric-500 to-gaming-neon-blue text-white font-gaming tracking-wide shadow-xl;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(0, 212, 255, 0.3);
   }
 
-  .btn-success {
-    @apply bg-success-500 hover:bg-success-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-
-  .btn-danger {
-    @apply bg-error-500 hover:bg-error-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-
-  .btn-ghost {
-    @apply bg-transparent hover:bg-slate-800 text-slate-300 font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-[0.98];
+  .btn-neon:hover {
+    @apply animate-pulse-glow;
   }
 
   .card {
-    @apply bg-slate-800 rounded-2xl p-5 shadow-card border border-slate-700/50 transition-shadow hover:shadow-card-hover;
+    @apply bg-gaming-dark-800 border border-gaming-dark-600 rounded-2xl p-6 backdrop-blur-sm;
   }
 
-  .card-interactive {
-    @apply card cursor-pointer hover:border-primary-500/30;
+  .card-glow {
+    @apply card relative overflow-hidden;
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.1);
   }
 
-  .input-field {
-    @apply w-full bg-slate-800 border border-slate-700 rounded-xl py-3 px-4 text-white placeholder-slate-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all;
+  .card-glow::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+  }
+
+  .card-glow:hover::before {
+    @apply opacity-100;
+  }
+
+  .input {
+    @apply w-full bg-gaming-dark-700 border border-gaming-dark-500 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-gaming-electric-500 focus:ring-2 focus:ring-gaming-electric-500/20 transition-all;
+  }
+
+  .input-glow {
+    @apply input;
+  }
+
+  .input-glow:focus {
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
   }
 
   .badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold;
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold;
   }
 
-  .badge-bronze {
-    @apply badge bg-bronze-500/20 text-bronze-500;
+  .badge-primary {
+    @apply badge bg-gaming-electric-500/20 text-gaming-electric-500 border border-gaming-electric-500/30;
   }
 
-  .badge-silver {
-    @apply badge bg-silver-500/20 text-silver-500;
+  .badge-neon {
+    @apply badge bg-gaming-neon-blue/20 text-gaming-neon-blue border border-gaming-neon-blue/30;
   }
 
-  .badge-gold {
-    @apply badge bg-gold-500/20 text-gold-600;
+  .badge-success {
+    @apply badge bg-gaming-neon-green/20 text-gaming-neon-green border border-gaming-neon-green/30;
   }
 
-  .badge-diamond {
-    @apply badge bg-diamond-500/20 text-diamond-600;
+  .badge-danger {
+    @apply badge bg-gaming-neon-red/20 text-gaming-neon-red border border-gaming-neon-red/30;
   }
 
-  .badge-master {
-    @apply badge bg-master-500/20 text-master-500;
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
   }
 
-  .stat-box {
-    @apply bg-slate-800/50 rounded-xl p-4 border border-slate-700/30;
+  .gradient-text {
+    @apply bg-gradient-to-r from-gaming-electric-500 via-gaming-neon-blue to-gaming-neon-purple bg-clip-text text-transparent;
   }
 
-  .coin-icon {
-    @apply inline-block w-5 h-5 text-accent-400;
+  .shimmer {
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
+    background-size: 200% 100%;
+    @apply animate-shimmer;
   }
 
-  .avatar {
-    @apply rounded-full object-cover border-2 border-slate-700;
+  .rank-badge {
+    @apply inline-flex items-center justify-center w-8 h-8 rounded-lg font-gaming font-bold text-sm;
   }
 
-  .avatar-lg {
-    @apply avatar w-20 h-20;
+  .rank-bronze {
+    @apply bg-gradient-to-br from-amber-600 to-amber-800 text-white;
   }
 
-  .avatar-md {
-    @apply avatar w-12 h-12;
+  .rank-silver {
+    @apply bg-gradient-to-br from-gray-300 to-gray-500 text-gaming-dark-900;
   }
 
-  .avatar-sm {
-    @apply avatar w-10 h-10;
+  .rank-gold {
+    @apply bg-gradient-to-br from-yellow-400 to-yellow-600 text-gaming-dark-900;
   }
 
-  .glow-effect {
-    @apply relative;
+  .rank-platinum {
+    @apply bg-gradient-to-br from-cyan-300 to-cyan-500 text-gaming-dark-900;
   }
 
-  .glow-effect::before {
+  .rank-diamond {
+    @apply bg-gradient-to-br from-blue-300 to-blue-500 text-white;
+  }
+
+  .rank-master {
+    @apply bg-gradient-to-br from-gaming-electric-500 to-gaming-neon-purple text-white;
+  }
+
+  .stat-card {
+    @apply relative overflow-hidden rounded-2xl bg-gaming-dark-700 p-6;
+  }
+
+  .stat-card::before {
     content: '';
-    @apply absolute inset-0 bg-current opacity-20 blur-xl rounded-full scale-150 -z-10;
+    @apply absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gaming-electric-500 to-gaming-neon-blue;
+  }
+
+  .mobile-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-gaming-dark-900/95 backdrop-blur-xl border-t border-gaming-dark-600 px-4 py-2 z-50;
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0) + 0.5rem;
+  }
+
+  .animate-in {
+    @apply animate-fade-in animate-slide-up;
   }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-accent-400;
+    @apply bg-gradient-to-r from-gaming-electric-500 to-gaming-neon-blue bg-clip-text text-transparent;
   }
 
-  .bg-gradient-radial {
-    background: radial-gradient(circle, var(--tw-gradient-stops));
+  .shadow-glow {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
   }
 
-  .safe-area-inset {
-    padding-bottom: env(safe-area-inset-bottom);
+  .shadow-neon-blue {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
   }
 }
